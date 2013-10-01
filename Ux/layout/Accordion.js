@@ -22,9 +22,10 @@ Ext.define('Ux.layout.Accordion', {
     setContainer: function (container) {
         this.callParent(arguments);
 
-        if (this.getMode() === 'SINGLE') {
-            container.on('show', 'checkMode', this, { single : true });
-        }
+        // TC allow Zero open items
+        // if (this.getMode() === 'SINGLE') {
+        //     container.on('show', 'checkMode', this, { single : true });
+        // }
 
         // Fixed a problem when the first item has 0 height initially causing a "bounce"
         container.on('show', 'finalStage', this, { single : true});
@@ -63,7 +64,7 @@ Ext.define('Ux.layout.Accordion', {
         });
     },
 
-    // @private
+    /*// @private
     checkMode: function (container) {
         var items = container.getInnerItems();
 
@@ -71,7 +72,7 @@ Ext.define('Ux.layout.Accordion', {
         if (items.length > 0 && !this.getExpandedItem()) {
             this.expand(items[0]);
         }
-    },
+    },*/
 
     insertInnerItem: function (item, index) {
         var me = this,
@@ -90,7 +91,7 @@ Ext.define('Ux.layout.Accordion', {
             header = this.config.header;
         } else {
             header = {
-                xtype  : 'titlebar',
+                xtype  : 'toolbar',
                 docked : 'top',
                 title  : me.container.items.items[index].config.title,
                 items  : [
@@ -164,7 +165,7 @@ Ext.define('Ux.layout.Accordion', {
         if (!component.isComponent) {
             component = Ext.getCmp(component.getId());
         }
-        if (component.isInnerItem() && !(this.getMode() === 'SINGLE' && this.getExpandedItem() === component)) {
+        if (component.isInnerItem()) {
             var titleDock   = component.titleDock,
                 titleHeight = titleDock.element.getHeight();
 
@@ -187,6 +188,7 @@ Ext.define('Ux.layout.Accordion', {
 
             if (this.getMode() === 'SINGLE') {
                 this.setExpandedItem(component);
+                
                 if (expanded) {
                     this.collapse(expanded);
                 }
@@ -199,7 +201,7 @@ Ext.define('Ux.layout.Accordion', {
                 rmAnim = true;
             }
 
-            component.setHeight(component.fullHeight);
+            component.setHeight(component.innerItems[0].itemCount * component.innerItems[0].itemHeight);
             component.collapsed = false;
 
             if (rmAnim) {
